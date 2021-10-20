@@ -1,6 +1,9 @@
 from __future__ import print_function
 
 import time
+
+import numpy
+
 from sr.robot import *
 
 """
@@ -19,6 +22,9 @@ d_th = 0.4
 
 R = Robot()
 """ instance of the class Robot"""
+
+d_br = 1
+""" float: distance for break """
 
 def drive(speed, seconds):
     """
@@ -85,37 +91,43 @@ def find_golden_token():
 def searchRoad():
 
     while (1):
-        tokenList = R.see()
-        if scanSector(0, tokenList) is True:
-            print("Sector 0")
+        dist_scan = scanSector( R.see() )
+        print("Distance from obstacle:", dist_scan[0])
+
+        if dist_scan[0] >= 2*d_br:
             return True
 
-        elif scanSector(1, tokenList) is True:
-            print("Sector 1")
-            turn(-2, 1)
-
-        elif scanSector(2, tokenList) is True:
-            print("Sector 2")
-            turn(-2, 2)
-
-        elif scanSector(3, tokenList) is True:
-            print("Sector 3")
-            turn(-2, 4)
-
-        elif scanSector(4, tokenList) is True:
-            print("Sector 4")
-            turn(2, 2)
-
-        elif scanSector(5, tokenList) is True:
-            print("Sector 5")
-            turn(2, 1)
+        elif dist_scan[0] >= d_br:
+            if dist_scan[1] > dist_scan[0]:
+                turn(4, 1)
+                return True
+            elif dist_scan[5] > dist_scan[0]:
+                turn(-4, 1)
+                return True
+            else:
+                return True
 
         else:
-            exit("No road found")
+            if dist_scan[1] >= d_br or dist_scan[5] >= d_br:
+                if dist_scan[1] >= dist_scan[5]:
+                    turn(4, 1)
+                else:
+                    turn(-4, 1)
 
-def scanSector(sector_number, tokenList):
-    print("Begin scanning sector", sector_number)
-    dist = 100
+            elif dist_scan[2] >= d_br or dist_scan[4] >= d_br:
+                if dist_scan[2] >= dist_scan[4]:
+                    turn(4, 2)
+                else:
+                    turn(-4, 2)
+
+            elif dist_scan[3] >= d_br:
+                turn(4, 4)
+
+            else:
+                turn(2, 1)
+
+def scanSector(tokenList):
+    dist_scan = 100*numpy.ones(6)
     sector = None
     for token in tokenList:
 
@@ -140,18 +152,11 @@ def scanSector(sector_number, tokenList):
         else:
             exit("No sector found")
 
-        if sector is sector_number and token.info.marker_type is MARKER_TOKEN_GOLD:
-            if token.dist < dist:
-                dist = token.dist
+        if token.info.marker_type is MARKER_TOKEN_GOLD:
+            if token.dist < dist_scan[sector]:
+                dist_scan[sector] = token.dist
 
-    print(dist)
-
-    if dist >= 0.75:
-        return True
-
-    else:
-        return False
-
+    return dist_scan
 
 def moveSilver():
     print("Grabbed! Let's move it...")
