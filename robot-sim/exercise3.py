@@ -6,7 +6,6 @@ from sr.robot import *
 """
 Exercise 3 python script
 
-We start from the solution of the exercise 2
 Put the main code after the definition of the functions. The code should make the robot:
 	- 1) find and grab the closest silver marker (token)
 	- 2) move the marker on the right
@@ -27,16 +26,19 @@ Modify the code of the exercise2 to make the robot:
 7- start again from 1
 
 	When done, run with:
-	$ python run.py exercise3.py
+	$ python run.py solutions/exercise3_solution.py
 
 """
 
 
 a_th = 2.0
-""" float: Threshold for the control of the orientation"""
+""" float: Threshold for the control of the linear distance"""
 
 d_th = 0.4
-""" float: Threshold for the control of the linear distance"""
+""" float: Threshold for the control of the orientation"""
+
+silver = True
+""" boolean: variable for letting the robot know if it has to look for a silver or for a golden marker"""
 
 R = Robot()
 """ instance of the class Robot"""
@@ -67,42 +69,78 @@ def turn(speed, seconds):
     R.motors[0].m0.power = 0
     R.motors[0].m1.power = 0
 
-def find_token():
+def find_silver_token():
     """
-    Function to find the closest token
+    Function to find the closest silver token
 
     Returns:
-	dist (float): distance of the closest token (-1 if no token is detected)
-	rot_y (float): angle between the robot and the token (-1 if no token is detected)
+	dist (float): distance of the closest silver token (-1 if no silver token is detected)
+	rot_y (float): angle between the robot and the silver token (-1 if no silver token is detected)
     """
     dist=100
     for token in R.see():
-        if token.dist < dist:
+        if token.dist < dist and token.info.marker_type is MARKER_TOKEN_SILVER:
             dist=token.dist
 	    rot_y=token.rot_y
     if dist==100:
-	return -1, -1
+	   return -1, -1
     else:
-   	return dist, rot_y
+   	    return dist, rot_y
+
+def find_golden_token():
+    """
+    Function to find the closest golden token
+
+    Returns:
+	dist (float): distance of the closest golden token (-1 if no golden token is detected)
+	rot_y (float): angle between the robot and the golden token (-1 if no golden token is detected)
+    """
+    dist=100
+    for token in R.see():
+        if token.dist < dist and token.info.marker_type is MARKER_TOKEN_GOLD:
+            dist=token.dist
+	    rot_y=token.rot_y
+    if dist==100:
+	   return -1, -1
+    else:
+   	    return dist, rot_y
+
+def main():
+    while(1):
+        if silver == True:
+            dist, rot_y = find_silver_token()
+        else:
+            dist, rot_y = find_golden_token()
+
+        if dist == -1:
+            print("No token found... searching for token...")
+            turn(10, 1)
+
+        elif rot_y < -a_th:
+            print("Alignment to the left...")
+            turn(2, 0.5)
+
+        elif rot_y > a_th:
+            print("Alignment to the right...")
+            turn(-2, 0.5)
+
+        elif dist > d_th:
+            print("Approaching token...")
+            drive(20, 0.5)
+
+        elif R.grab() == True:
+            print("Grabbed! Let's move it...")
+            turn(20, 2)
+            drive(20, 2)
+            R.release()
+            drive(-20, 2)
+            turn(-20, 2)
+
+        else:
+            print("I will try again to grab the token...")
+            drive(-20, 2)
+
+main()
 
 
-while 1:
-    dist, rot_y = find_token()  # we look for markers
-    if dist==-1:
-        print("I don't see any token!!")
-	exit()  # if no markers are detected, the program ends
-    elif dist <d_th: 
-        print("Found it!")
-        R.grab() # if we are close to the token, we grab it.
-        print("Gotcha!") 
-        exit()
-    elif -a_th<= rot_y <= a_th: # if the robot is well aligned with the token, we go forward
-        print("Ah, here we are!.")
-        drive(10, 0.5)
-    elif rot_y < -a_th: # if the robot is not well aligned with the token, we move it on the left or on the right
-        print("Left a bit...")
-        turn(-2, 0.5)
-    elif rot_y > a_th:
-        print("Right a bit...")
-        turn(+2, 0.5)
 
