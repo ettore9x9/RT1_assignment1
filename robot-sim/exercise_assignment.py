@@ -6,36 +6,26 @@ import numpy
 
 from sr.robot import *
 
-"""
+# Run with: $ python run.py exercise_assignment.py
 
-	When done, run with:
-	$ python run.py solutions/exercise3_solution.py
+a_th = 2.0 # float: Threshold for the control of the linear distance.
 
-"""
+d_th = 0.4 # float: Threshold for the control of the orientation.
 
+R = Robot() # Instance of the class Robot.
 
-a_th = 2.0
-""" float: Threshold for the control of the linear distance"""
+d_br = 1.2 # float: Alert distance for avoiding obstacles, distance break.
 
-d_th = 0.4
-""" float: Threshold for the control of the orientation"""
-
-R = Robot()
-""" instance of the class Robot"""
-
-d_br = 1.2
-""" float: distance for break """
-
-nsect = 12
-# int: number of sectors in which I divide the space around me.
-# It must be even to enshure simmetry.
+nsect = 12 #int: Number of sectors in which the space around the robot is divided.
+# nsect Must be even to enshure simmetry.
 
 def drive(speed, seconds):
     """
-    Function for setting a linear velocity
+    Function for setting a linear velocity.
     
-    Args: speed (int): the speed of the wheels
-	  seconds (int): the time interval
+    Args: 
+    speed (int): the speed of the wheels.
+	seconds (int): the time interval.
     """
     R.motors[0].m0.power = speed
     R.motors[0].m1.power = speed
@@ -45,10 +35,11 @@ def drive(speed, seconds):
 
 def turn(speed, seconds):
     """
-    Function for setting an angular velocity
+    Function for setting an angular velocity.
     
-    Args: speed (int): the speed of the wheels
-	  seconds (int): the time interval
+    Args:
+    speed (int): the speed of the wheels.
+	seconds (int): the time interval.
     """
     R.motors[0].m0.power = speed
     R.motors[0].m1.power = -speed
@@ -58,11 +49,11 @@ def turn(speed, seconds):
 
 def find_silver_token():
     """
-    Function to find the closest silver token
+    Function to find the closest silver token.
 
     Returns:
-	dist (float): distance of the closest silver token (-1 if no silver token is detected)
-	rot_y (float): angle between the robot and the silver token (-1 if no silver token is detected)
+	dist (float): distance of the closest silver token (-1 if no silver token is detected).
+	rot_y (float): angle between the robot and the silver token (-1 if no silver token is detected).
     """
     dist=100
     for token in R.see():
@@ -76,11 +67,11 @@ def find_silver_token():
 
 def find_golden_token():
     """
-    Function to find the closest golden token
+    Function to find the closest golden token.
 
     Returns:
-    dist (float): distance of the closest golden token (-1 if no golden token is detected)
-    rot_y (float): angle between the robot and the golden token (-1 if no golden token is detected)
+    dist (float): distance of the closest golden token (-1 if no golden token is detected).
+    rot_y (float): angle between the robot and the golden token (-1 if no golden token is detected).
     """
     dist=100
     for token in R.see():
@@ -93,12 +84,21 @@ def find_golden_token():
         return dist, rot_y
 
 def searchRoad():
+    """
+    Function to search a good orientation for the robot, it returns when the robot is well aligned.
 
+    """
     while (1):
-        dist_scan = scanSector( R.see() )
-        print("Obstacle in:", dist_scan[0], " m")
+        dist_scan = scanSector( R.see() ) # Calls the scanning function.
 
-        if dist_scan[0] >= d_br:
+        # Prints the distance in [m] from the obstacle in sector 0 (front of the robot).
+        print("Obstacle in:", dist_scan[0])
+
+        if dist_scan[0] >= d_br: # The obstacle in sector 0 is far away, so the robot can go forward.
+
+            # To avoid being too close to an obstacle with the side of the robot, checks if sector 1
+            # and sector -1 (very near sectors of sector 0) are free from obstacles. If they are
+            # not, then turns just a little bit.
             if dist_scan[1] <= d_br:
                 print("Turn a little left...")
                 turn(-4, 0.6)
@@ -106,17 +106,25 @@ def searchRoad():
                 print("Turn a little right...")
                 turn(4, 0.6)
 
-            return True
-        else:
+            return True # The robot is well aligned!
+            
+        else: # There is an obstacle in front of the robot, it must turns to find a better way.
+
+            # Finds the free-from-obstacles sector closest to sector 0.
+            searching = 1
             for j in range(nsect/2):
-                if dist_scan[j] >= d_br:
-                    print("Turn right...")
-                    turn(4, 1.2)
-                    return True
-                if dist_scan[-j] >= d_br:
+
+                if dist_scan[-j] >= d_br: # First looks left.
                     print("Turn left...")
                     turn(-4, 1.2)
-                    return True
+                    break # Starts again the while cycle.
+
+                elif dist_scan[j] >= d_br: # Then looks right.
+                    print("Turn right...")
+                    turn(4, 1.2)
+                    break # Starts again the while cycle.
+                if j is nsect/2:
+                    return False
 
 
 def scanSector(token_list):
