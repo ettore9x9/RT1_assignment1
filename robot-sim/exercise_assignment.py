@@ -23,8 +23,12 @@ d_th = 0.4
 R = Robot()
 """ instance of the class Robot"""
 
-d_br = 1
+d_br = 1.2
 """ float: distance for break """
+
+nsect = 12
+# int: number of sectors in which I divide the space around me.
+# It must be even to enshure simmetry.
 
 def drive(speed, seconds):
     """
@@ -92,73 +96,48 @@ def searchRoad():
 
     while (1):
         dist_scan = scanSector( R.see() )
-        print("Distance from obstacle:", dist_scan[0])
+        print("Obstacle in:", dist_scan[0], " m")
 
-        if dist_scan[0] >= 2*d_br:
+        if dist_scan[0] >= d_br:
+            if dist_scan[1] <= d_br:
+                print("Turn a little left...")
+                turn(-4, 0.6)
+            if dist_scan[-1] <= d_br:
+                print("Turn a little right...")
+                turn(4, 0.6)
+
             return True
-
-        elif dist_scan[0] >= d_br:
-            if dist_scan[1] > dist_scan[0]:
-                turn(4, 1)
-                return True
-            elif dist_scan[5] > dist_scan[0]:
-                turn(-4, 1)
-                return True
-            else:
-                return True
-
         else:
-            if dist_scan[1] >= d_br or dist_scan[5] >= d_br:
-                if dist_scan[1] >= dist_scan[5]:
-                    turn(4, 1)
-                else:
-                    turn(-4, 1)
+            for j in range(nsect/2):
+                if dist_scan[j] >= d_br:
+                    print("Turn right...")
+                    turn(4, 1.2)
+                    return True
+                if dist_scan[-j] >= d_br:
+                    print("Turn left...")
+                    turn(-4, 1.2)
+                    return True
 
-            elif dist_scan[2] >= d_br or dist_scan[4] >= d_br:
-                if dist_scan[2] >= dist_scan[4]:
-                    turn(4, 2)
-                else:
-                    turn(-4, 2)
 
-            elif dist_scan[3] >= d_br:
-                turn(4, 4)
+def scanSector(token_list):
 
-            else:
-                turn(2, 1)
+    sector_angle = 360/nsect
+    semisector = sector_angle/2
+    dist_scan = 100*numpy.ones(nsect)
 
-def scanSector(tokenList):
-    dist_scan = 100*numpy.ones(6)
-    sector = None
-    for token in tokenList:
-
-        if token.rot_y >= -30 and token.rot_y <= 30:
-            sector = 0
-
-        elif token.rot_y > 30 and token.rot_y <= 90:
-            sector = 1
-
-        elif token.rot_y > 90 and token.rot_y <= 150:
-            sector = 2
-
-        elif token.rot_y > 150 or token.rot_y < -150:
-            sector = 3
-
-        elif token.rot_y >= -150 and token.rot_y < -90:
-            sector = 4
-
-        elif token.rot_y >= -90 and token.rot_y < -30:
-            sector = 5
-
+    for token in token_list:
+        if token.rot_y >= 0:
+            sector = int((token.rot_y + semisector)/sector_angle)
         else:
-            exit("No sector found")
+            sector = int((token.rot_y - semisector)/sector_angle)
 
-        if token.info.marker_type is MARKER_TOKEN_GOLD:
-            if token.dist < dist_scan[sector]:
-                dist_scan[sector] = token.dist
+        if token.info.marker_type is MARKER_TOKEN_GOLD and token.dist < dist_scan[sector]:
+            dist_scan[sector] = token.dist
 
     return dist_scan
 
 def moveSilver():
+
     print("Grabbed! Let's move it...")
     turn(30, 2)
     drive(20, 1)
@@ -178,6 +157,3 @@ def main():
             drive(20, 0.3)
 
 main()
-
-
-
