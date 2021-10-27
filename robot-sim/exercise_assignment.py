@@ -2,22 +2,26 @@ from __future__ import print_function
 
 import time
 
-import numpy
+import numpy as np
 
 from sr.robot import *
 
-# Run with: $ python run.py exercise_assignment.py
+# Run with: $ python2 run.py exercise_assignment.py
 
-a_th = 2.0 # float: Threshold for the control of the linear distance.
+a_th = 2.0 # float: Threshold for the control of the orientation.
 
-d_th = 0.4 # float: Threshold for the control of the orientation.
+d_th = 0.4 # float: Threshold for the control of the linear distance.
 
 R = Robot() # Instance of the class Robot.
 
 d_br = 1.2 # float: Alert distance for avoiding obstacles, distance break.
 
-nsect = 12 #int: Number of sectors in which the space around the robot is divided.
+nsect = 12 # int: Number of sectors in which the space around the robot is divided.
 # nsect Must be even to enshure simmetry.
+
+sector_angle = 360/nsect # float: Angle of every sector.
+
+semisector = sector_angle/2 # float: Semiangle of every sector.
 
 def drive(speed, seconds):
     """
@@ -85,83 +89,173 @@ def find_golden_token():
 
 def searchRoad():
     """
-    Function to search a good orientation for the robot, it returns when the robot is well aligned.
+    Function to search a good orientation for the robot.
+
+    Returns:
+    0 when the robot is well aligned,
+    1 if the robot is not already aligned
+    -1 if no free road is detected.
 
     """
-    while (1):
-        dist_scan = scanSector( R.see() ) # Calls the scanning function.
+    dist_scan = scanSector( R.see() ) # Calls the scanning function.
 
-        # Prints the distance in [m] from the obstacle in sector 0 (front of the robot).
-        print("Obstacle in:", dist_scan[0])
+    # Prints the distance in [m] from the obstacle in sector 0 (front of the robot).
+    print("Obstacle in:", dist_scan[0])
 
-        if dist_scan[0] >= d_br: # The obstacle in sector 0 is far away, so the robot can go forward.
+    if dist_scan[1] <= d_br and dist_scan[-1] <= d_br: # The robot is trapped, it finds another way.
+        if findRoad(dist_scan) is True:
+            return 1
+        else:
+            return -1 # No road found.
 
-            # To avoid being too close to an obstacle with the side of the robot, checks if sector 1
-            # and sector -1 (very near sectors of sector 0) are free from obstacles. If they are
-            # not, then turns just a little bit.
-            if dist_scan[1] <= d_br:
-                print("Turn a little left...")
-                turn(-4, 0.6)
-            if dist_scan[-1] <= d_br:
-                print("Turn a little right...")
-                turn(4, 0.6)
 
-            return True # The robot is well aligned!
-            
-        else: # There is an obstacle in front of the robot, it must turns to find a better way.
+    elif dist_scan[0] >= d_br: # The obstacle in sector 0 is far away, so the robot can go forward.
 
-            # Finds the free-from-obstacles sector closest to sector 0.
-            searching = 1
-            for j in range(nsect/2):
+        # To avoid being too close to an obstacle with the side of the robot, checks if sector 1
+        # and sector -1 (very near sectors of sector 0) are free from obstacles. If they are
+        # not, then turns just a little bit.
+        if dist_scan[1] <= d_br:
+            print("Turn a little left...")
+            turn(-10, 0.2)
+        if dist_scan[-1] <= d_br:
+            print("Turn a little right...")
+            turn(10, 0.2)
 
-                if dist_scan[-j] >= d_br: # First looks left.
-                    print("Turn left...")
-                    turn(-4, 1.2)
-                    break # Starts again the while cycle.
+        return 0 # The robot is well aligned!
+        
+    # There is an obstacle in front of the robot, it must turns to find a better way.
+    elif findRoad (dist_scan) is True: 
+        return 1
 
-                elif dist_scan[j] >= d_br: # Then looks right.
-                    print("Turn right...")
-                    turn(4, 1.2)
-                    break # Starts again the while cycle.
-                if j is nsect/2:
-                    return False
+    return -1 # No road found.
 
+def findRoad (dist_scan):
+    """
+    Function to turn the robot in order to find a road free from obstacle.
+
+    Returns:
+    True when it finds a good road.
+    False when it doesn't find any road.
+
+    """
+    for j in range(nsect/2 - 1): # Looks in all sectors without sector 0.
+
+        if dist_scan[-j-1] >= d_br and dist_scan[-j-1] >= dist_scan[j+1]: # First looks left.
+            print("Turn left...")
+            turn(-20, 0.2)
+            return True
+
+        elif dist_scan[j+1] >= d_br and dist_scan[j+1] >= dist_scan[-j-1]: # Then looks right.
+            print("Turn right...")
+            turn(20, 0.2)
+            return True
+
+    return False # No road found.
 
 def scanSector(token_list):
+    """
+    Function to search in every sector the closest gold token.
 
-    sector_angle = 360/nsect
-    semisector = sector_angle/2
-    dist_scan = 100*numpy.ones(nsect)
+    Return:
+    dist_scan: float array, every element j is the smallest distance from a golden token
+               detected in j-th sector.
+    """
+
+    dist_scan = 100*np.ones(nsect) # Preallocates the array.
 
     for token in token_list:
-        if token.rot_y >= 0:
+
+        # Finds the correct sector for every token.
+        if token.rot_y >= 0: # For positive sectors.
             sector = int((token.rot_y + semisector)/sector_angle)
-        else:
+
+        else: # For negative sectors.
             sector = int((token.rot_y - semisector)/sector_angle)
 
+        # If it finds a closest token, than update the dist_scan array.
         if token.info.marker_type is MARKER_TOKEN_GOLD and token.dist < dist_scan[sector]:
             dist_scan[sector] = token.dist
 
     return dist_scan
 
-def moveSilver():
+def searchSilver():
+    """
+    Function to search the closest silver token and to make the robot moves close to it.
 
-    print("Grabbed! Let's move it...")
-    turn(30, 2)
-    drive(20, 1)
-    R.release()
-    drive(-20, 1)
-    turn(-30, 2)
+    Returns when the silver token is moved behind the robot whith the function moveSilver.
+    """
+
+    while (1):
+        dist, rot_y = find_silver_token()
+
+        if rot_y < -a_th:
+            print("Alignment to the left...")
+            turn(-2, 0.4)
+
+        elif rot_y > a_th:
+            print("Alignment to the right...")
+            turn(2, 0.4)
+
+        else: # The robot is well aligned.
+            if R.grab() is True: # Tries to grab the silver token.
+                print("Grabbed! Let's move it...")
+                moveSilver()
+                return 0
+
+            else:
+                drive(20, 0.5) # Moves forward to the silver token.
+
+def moveSilver():
+    """
+    Function to move the grabbed silver token.
+    It searchs around the robot if it's better to turn left or right.
+
+    Returns when the silver token is moved behind the robot.
+    """
+
+    dist_scan = scanSector( R.see() )
+    min_dist_sector = 0
+    min_val = 100
+
+    # Find the sector with the closest golden token, to turn on the other side.
+    for j in range(nsect):
+        if dist_scan[j] < min_val:
+            min_val = dist_scan[j]
+            min_dist_sector = j
+
+    if min_dist_sector <= nsect/2: # The sector with the minimum distance is on the right.
+        turn(-30, 2) # So turns on the left.
+        drive(20, 1)
+        R.release()
+        drive(-20, 1)
+        turn(30, 2)
+
+    else: # The sector with the minimum distance is on the left.
+        turn(30, 2) # So turns on the right.
+        drive(20, 1)
+        R.release()
+        drive(-20, 1)
+        turn(-30, 2)
 
 def main():
 
     while(1):
-        searchRoad()
-        dist, rot_y = find_silver_token()
-        if R.grab() is True:
-            moveSilver()
+        rf = searchRoad() # Road found
+        if rf is 0: # If rf is zero, there's no obstacles in front of the robot.
+            dist, rot_y = find_silver_token() # Find the closest silver token.
 
-        else:
-            drive(20, 0.3)
+            if abs(rot_y) <= sector_angle and dist <= d_br: # If the silver token is in font of the robot.
+                print("I see a silver token")
+                searchSilver()
+
+            else: # There's no silver token in front of the robot, it can go forward.
+                drive(40, 0.5)
+
+        elif rf is 1: # If rf is 1, the road is not already found, so it explores a little bit
+            drive(20, 0.2)
+
+        else: # If rf is -1, no road exist, so an error occours.
+            print("No road found. Try to search with little sectors (increase nsect).")
+            return -1
 
 main()
