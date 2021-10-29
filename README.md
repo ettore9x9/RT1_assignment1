@@ -47,12 +47,15 @@ To achieve this goal, I developed five functions:
 The robot is able to divide the space around itself into sectors, and to find the nearest obstacle in each one.
 The number of sectors is specified in the variable nsect (default value = 12), changing this paramether can compromise the right operation.
 Sectors are numbered like this:
+
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/sectors.jpg" width=50% height=50%>
+
 So sector 0 is always in front of the robot, rightside sectors has negative numbers and leftside sectors positive
 ones.
 
 
  The main code has this flowchart:
+ 
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_main.jpg" width=50% height=50%>
 
 ### searchRoad ###
@@ -68,6 +71,7 @@ Choices made:
 
 
 The `searchRoad` function has this flowchart:
+
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_searchRoad.jpg" width=50% height=50%>
 
 ### findRoad ###
