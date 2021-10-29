@@ -2,7 +2,7 @@ Python Robotics Simulator
 ================================
 
 This is a simple, portable robot simulator developed by [Student Robotics](https://studentrobotics.org).
-Some of the arenas and the exercises have been modified for the Research Track I course
+Some of the arenas and the exercises have been modified for the Research Track I course.
 
 Installing and running
 ----------------------
@@ -11,7 +11,7 @@ The simulator requires a Python 2.7 installation, the [pygame](http://pygame.org
 
 Once the dependencies are installed, simply run the `test.py` script to test out the simulator.
 
-## Exercise
+## Exercises
 -----------------------------
 
 To run one or more scripts in the simulator, use `run.py`, passing it the file names. 
@@ -30,6 +30,24 @@ You have also the solutions of the exercises (folder solutions)
 ```bash
 $ python run.py solutions/exercise1_solution.py
 ```
+
+Assignment
+----------
+
+The purpose of the assignment is to make the robot move into the circuit without hurting obstacles (golden 
+tokens) and moving the silver tokens behind the robot itself when it finds them along its way.
+
+To achieve this goal, I developed a code with this flowchart:
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart1.jpg" width=50% height=50%>
+
+
+
+You can run the program with:
+
+```bash
+$ python run.py exercise_assignment.py
+```
+
 
 Robot API
 ---------
