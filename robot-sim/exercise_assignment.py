@@ -132,7 +132,7 @@ def searchRoad():
 
 def findRoad (dist_scan):
     """
-    Function to turn the robot in order to find a road free from obstacle.
+    Function to turn the robot in order to find a road free from obstacles.
 
     Returns:
     True when it finds a good road.
@@ -212,7 +212,6 @@ def moveSilver():
 
     Returns when the silver token is moved behind the robot.
     """
-
     dist_scan = scanSector( R.see() )
     min_dist_sector = 0
     min_val = 100

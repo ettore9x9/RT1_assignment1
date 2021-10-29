@@ -37,8 +37,61 @@ Assignment
 The purpose of the assignment is to make the robot move into the circuit without hurting obstacles (golden 
 tokens) and moving the silver tokens behind the robot itself when it finds them along its way.
 
-To achieve this goal, I developed a code with this flowchart:
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart1.jpg" width=50% height=50%>
+To achieve this goal, I developed five functions:
+* `searchRoad()`
+* `findRoad(dist_scan)`
+* `scanSector(token_list)`
+* `searchSilver()`
+* `moveSilver()`
+
+The robot is able to divide the space around itself into sectors, and to find the nearest obstacle in each one.
+The number of sectors is specified in the variable nsect (default value = 12), changing this paramether can compromise the right operation.
+Sectors are numbered like this:
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/sectors.jpg" width=50% height=50%>
+So sector 0 is always in front of the robot, rightside sectors has negative numbers and leftside sectors positive
+ones.
+
+
+ The main code has this flowchart:
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_main.jpg" width=50% height=50%>
+
+### searchRoad ###
+
+Let's focus on the function `searchRoad`. It aims to search a good orientation for the robot, and chooses to 
+turn the robot or not, evaluating the distance from obstacles in sectors.
+
+Choices made:
+* If an obstacle is near in both sectors +1 and -1 the road is too narrow, so call the function `findRoad`.
+* If there aren't obstacles in sector 0, go further. 
+ - To avoid being too close to an obstacle with the side of the robot, checks if sector 1 and sector -1 are free from obstacles. If they are not, then turns just a little bit.
+* If there is an obstacle in sector 0, it must turns to find a better way, so call the function `findRoad`.
+
+
+The `searchRoad` function has this flowchart:
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_searchRoad.jpg" width=50% height=50%>
+
+### findRoad ###
+
+The function `findRoad` aims to turn the robot in order to find a road free from obstacles.
+It looks both rightside (negative numbers) and leftside (positive numbers) symmetrically and sequentially, and stops when it finds the first free sector.
+For example, it first looks in sectors +1 and -1 and chooses the one with the farther obstacle, than it turns on its side. If both have a near obstacle, then it looks in sectors +2 and -2, and so on.
+
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad.jpg">
+
+
+### scanSector ###
+
+The `scanSector` function is used to search in every sector the closest gold token.
+Its argument is the list of tokens provided by the `R.see` method, and it returns a float array in which element j is the smallest distance from a golden token detected in j-th sector.
+
+### searchSilver ###
+
+The function `searchSilver` aims to search the closest silver token and to make the robot moves close to it. First it alignes the robot, than moves near the silver token and finally grabs it and call the `moveSilver` function.
+
+
+### moveSilver ###
+
+The `moveSilver` function is able to move behind the robot the grabbed silver token, searching around for obstacles to decide if it's better to turn left or right. Thanks to this it avoids to hurt obstacles during the turning operation.
 
 
 
