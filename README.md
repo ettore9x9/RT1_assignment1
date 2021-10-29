@@ -91,7 +91,7 @@ It looks both rightside (negative numbers) and leftside (positive numbers) symme
 For example, it first looks in sectors +1 and -1 and chooses the one with the farther obstacle, than it turns on its side. If both have a near obstacle, then it looks in sectors +2 and -2, and so on.
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad.jpg">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad.jpg" width=80%>
 </p>
 
 ### scanSector ###
@@ -108,7 +108,7 @@ The function `searchSilver` aims to search the closest silver token and to make 
 The `moveSilver` function is able to move behind the robot the grabbed silver token, searching around for obstacles to decide if it's better to turn left or right. Thanks to this it avoids to hurt obstacles during the turning operation.
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver.jpg">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver.jpg" width=80%>
 </p>
 
 Robot API
