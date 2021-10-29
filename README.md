@@ -47,13 +47,20 @@ To achieve this goal, I developed five functions:
 The robot is able to divide the space around itself into sectors, and to find the nearest obstacle in each one.
 The number of sectors is specified in the variable nsect (default value = 12), changing this paramether can compromise the right operation.
 Sectors are numbered like this:
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/sectors.jpg" width=50% height=50%>
+
+<p align="center">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/sectors.jpg" width=30% height=30%>
+</p>
+
 So sector 0 is always in front of the robot, rightside sectors has negative numbers and leftside sectors positive
 ones.
 
 
  The main code has this flowchart:
+ 
+<p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_main.jpg" width=50% height=50%>
+</p>
 
 ### searchRoad ###
 
@@ -68,7 +75,10 @@ Choices made:
 
 
 The `searchRoad` function has this flowchart:
+
+<p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_searchRoad.jpg" width=50% height=50%>
+</p>
 
 ### findRoad ###
 
@@ -76,8 +86,9 @@ The function `findRoad` aims to turn the robot in order to find a road free from
 It looks both rightside (negative numbers) and leftside (positive numbers) symmetrically and sequentially, and stops when it finds the first free sector.
 For example, it first looks in sectors +1 and -1 and chooses the one with the farther obstacle, than it turns on its side. If both have a near obstacle, then it looks in sectors +2 and -2, and so on.
 
+<p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad.jpg">
-
+</p>
 
 ### scanSector ###
 
