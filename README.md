@@ -38,7 +38,7 @@ The purpose of the assignment is to make the robot move into the circuit without
 tokens) and moving the silver tokens behind the robot itself when it finds them along its way.
 
 To achieve this goal, I developed a code with this flowchart:
-![alt text](https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart1.jpg "Flowchart1" | height=200)
+![alt text](https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart1.jpg "Flowchart1" | height="200")
 
 
 
