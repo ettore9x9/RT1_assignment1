@@ -34,6 +34,12 @@ $ python run.py solutions/exercise1_solution.py
 Assignment
 ----------
 
+You can run the program with:
+
+```bash
+$ python run.py exercise_assignment.py
+```
+
 The purpose of the assignment is to make the robot move into the circuit without hurting obstacles (golden 
 tokens) and moving the silver tokens behind the robot itself when it finds them along its way.
 
@@ -55,7 +61,6 @@ Sectors are numbered like this:
 So sector 0 is always in front of the robot, rightside sectors has negative numbers and leftside sectors positive
 ones.
 
-
  The main code has this flowchart:
  
 <p align="center">
@@ -72,7 +77,6 @@ Choices made:
 * If there aren't obstacles in sector 0, go further. 
  - To avoid being too close to an obstacle with the side of the robot, checks if sector 1 and sector -1 are free from obstacles. If they are not, then turns just a little bit.
 * If there is an obstacle in sector 0, it must turns to find a better way, so call the function `findRoad`.
-
 
 The `searchRoad` function has this flowchart:
 
@@ -99,19 +103,13 @@ Its argument is the list of tokens provided by the `R.see` method, and it return
 
 The function `searchSilver` aims to search the closest silver token and to make the robot moves close to it. First it alignes the robot, than moves near the silver token and finally grabs it and call the `moveSilver` function.
 
-
 ### moveSilver ###
 
 The `moveSilver` function is able to move behind the robot the grabbed silver token, searching around for obstacles to decide if it's better to turn left or right. Thanks to this it avoids to hurt obstacles during the turning operation.
 
-
-
-You can run the program with:
-
-```bash
-$ python run.py exercise_assignment.py
-```
-
+<p align="center">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver.jpg">
+</p>
 
 Robot API
 ---------
