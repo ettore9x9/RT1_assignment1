@@ -40,28 +40,24 @@ You can run the program with:
 $ python run.py exercise_assignment.py
 ```
 
-The purpose of the assignment is to make the robot move into the circuit without hurting obstacles (golden 
-tokens) and moving the silver tokens behind the robot itself when it finds them along its way.
+The objective of the assignment is to make the robot wander in the circuit, avoiding obstacles (golden tokens) and moving behind itself the silver tokens found along its way.
 
-To achieve this goal, I developed five functions:
+To achieve this goal, five functions were developed:
 * `searchRoad()`
 * `findRoad(dist_scan)`
-* `scanSector(token_list)`
+* `scanSectors(token_list)`
 * `searchSilver()`
 * `moveSilver()`
 
-The robot is able to divide the space around itself into sectors, and to find the nearest obstacle in each one.
-The number of sectors is specified in the variable nsect (default value = 12), changing this paramether can compromise the right operation.
-Sectors are numbered like this:
+The robot can divide the surrounding space into sectors, and find the nearest obstacle in each one. The number of sectors is specified in the variable nsect (default value = 12); changing this parameter can compromise the operation. Sectors are numbered as shown:
 
 <p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/sectors.jpg" width=30% height=30%>
 </p>
 
-So sector 0 is always in front of the robot, rightside sectors has negative numbers and leftside sectors positive
-ones.
+Meaning that sector 0 is always in front of the robot, while right-side sectors have negative numbers and left-side sectors positive ones.
 
- The main code has this flowchart:
+The main code has the following flowchart:
  
 <p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_main.jpg" width=50% height=50%>
@@ -69,16 +65,15 @@ ones.
 
 ### searchRoad ###
 
-Let's focus on the function `searchRoad`. It aims to search a good orientation for the robot, and chooses to 
-turn the robot or not, evaluating the distance from obstacles in sectors.
+Let us focus on the function `searchRoad`. This function aims to search for a good orientation for the robot, choosing whether to turn it or not, depending on the distance from the obstacles in each sector.
 
 Choices made:
-* If an obstacle is near in both sectors +1 and -1 the road is too narrow, so call the function `findRoad`.
-* If there aren't obstacles in sector 0, go further. 
- - To avoid being too close to an obstacle with the side of the robot, checks if sector 1 and sector -1 are free from obstacles. If they are not, then turns just a little bit.
-* If there is an obstacle in sector 0, it must turns to find a better way, so call the function `findRoad`.
+* If an obstacle is found to be near in both sectors +1 and -1, i.e., the road is too narrow, it calls the function `findRoad`.
+* Otherwise, provided that there are no obstacles in sector 0, it moves the robot further.
+* Furthermore, to avoid the robot's side getting too close to an obstacle, `searchRoad` checks if sectors +1 or -1 are obstacle-free. If one of them is not, then it turns a little bit.
+* If there is an obstacle in sector 0, the robot must turn to find a better way, so the `findRoad` function is called.
 
-The `searchRoad` function has this flowchart:
+The `searchRoad` function has the following flowchart:
 
 <p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_searchRoad.jpg" width=50% height=50%>
@@ -86,26 +81,24 @@ The `searchRoad` function has this flowchart:
 
 ### findRoad ###
 
-The function `findRoad` aims to turn the robot in order to find a road free from obstacles.
-It looks both rightside (negative numbers) and leftside (positive numbers) symmetrically and sequentially, and stops when it finds the first free sector.
-For example, it first looks in sectors +1 and -1 and chooses the one with the farther obstacle, than it turns on its side. If both have a near obstacle, then it looks in sectors +2 and -2, and so on.
+The function `findRoad` aims at finding an obstacle-free road to orient the robot that way. To do so, it looks both right-side (negative numbers) and left-side (positive numbers), symmetrically and sequentially, and stops when it finds the nearest obstacle-free sector.
+Specifically, for each pair of sectors (e.g., +1 and -1), the function selects the one with the further obstacle and checks whether the obstacle's distance is acceptable. If so, the sector is considered obstacle-free. Otherwise, the search continues.
 
 <p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad.jpg" width=80%>
 </p>
 
-### scanSector ###
+### scanSectors ###
 
-The `scanSector` function is used to search in every sector the closest gold token.
-Its argument is the list of tokens provided by the `R.see` method, and it returns a float array in which element j is the smallest distance from a golden token detected in j-th sector.
+The `scanSector` function is used to search for the closest gold token in each sector. Its argument is the list of tokens provided by the `R.see` method, and it returns a float array in which the j-th element is the smallest distance from a golden token detected in the j-th sector.
 
 ### searchSilver ###
 
-The function `searchSilver` aims to search the closest silver token and to make the robot moves close to it. First it alignes the robot, than moves near the silver token and finally grabs it and call the `moveSilver` function.
+The function `searchSilver` aims to search for the closest silver token to make the robot collect it. First, it turns the robot, then it drives the robot near the silver token to finally grab it. Lastly, it calls the `moveSilver` function.
 
 ### moveSilver ###
 
-The `moveSilver` function is able to move behind the robot the grabbed silver token, searching around for obstacles to decide if it's better to turn left or right. Thanks to this it avoids to hurt obstacles during the turning operation.
+The `moveSilver` function can move the grabbed silver token behind the robot, looking around for obstacles to decide if it's better to turn left or right. Thanks to this, it avoids the robot hurting obstacles during the turning operation.
 
 <p align="center">
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver.jpg" width=80%>
