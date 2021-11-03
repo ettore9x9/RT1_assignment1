@@ -99,7 +99,7 @@ def searchRoad():
     -1 if no free road is detected.
 
     """
-    dist_scan = scanSector( R.see() ) # Calls the scanning function.
+    dist_scan = scanSectors( R.see() ) # Calls the scanning function.
 
     # Prints the distance in [m] from the obstacle in sector 0 (front of the robot).
     sys.stdout.write("\rObstacle in: {0}".format(round(dist_scan[0], 3)))
@@ -152,7 +152,7 @@ def findRoad (dist_scan):
 
     return False # No road found.
 
-def scanSector(token_list):
+def scanSectors(token_list):
     """
     Function to search in every sector the closest gold token.
 
@@ -212,7 +212,7 @@ def moveSilver():
 
     Returns when the silver token is moved behind the robot.
     """
-    dist_scan = scanSector( R.see() )
+    dist_scan = scanSectors( R.see() )
     min_dist_sector = 0
     min_val = 100
 
@@ -223,18 +223,18 @@ def moveSilver():
             min_dist_sector = j
 
     if min_dist_sector <= nsect/2: # The sector with the minimum distance is on the right.
-        turn(-35, 2) # So turns on the left.
+        turn(-30, 2) # So turns on the left.
         drive(20, 1)
         R.release()
         drive(-20, 1)
-        turn(35, 2)
+        turn(30, 2)
 
     else: # The sector with the minimum distance is on the left.
-        turn(35, 2) # So turns on the right.
+        turn(30, 2) # So turns on the right.
         drive(20, 1)
         R.release()
         drive(-20, 1)
-        turn(-35, 2)
+        turn(-30, 2)
 
 def main():
 
@@ -242,7 +242,7 @@ def main():
 
     while(1):
         rf = searchRoad() # Road found
-        if rf is 0: # If rf is zero, there's no obstacles in front of the robot.
+        if rf is 0: # There's no obstacles in front of the robot.
             dist, rot_y = find_silver_token() # Find the closest silver token.
 
             if abs(rot_y) <= sector_angle and dist <= d_br: # If the silver token is in font of the robot.
@@ -252,10 +252,10 @@ def main():
             else: # There's no silver token in front of the robot, it can go forward.
                 drive(40, 0.5)
 
-        elif rf is 1: # If rf is 1, the road is not already found, so it explores a little bit
+        elif rf is 1: # The road is not already found, so it explores a little bit
             drive(20, 0.2)
 
-        else: # If rf is -1, no road exist, so an error occours.
+        else: # No road exists, so an error occours.
             print("No road found. Try to search with little sectors (increase nsect).")
             return -1
 
