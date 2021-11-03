@@ -216,7 +216,7 @@ def moveSilver():
     min_dist_sector = 0
     min_val = 100
 
-    # Find the sector with the closest golden token, to turn on the other side.
+    # Finds the sector with the closest golden token, to turn on the other side.
     for j in range(nsect):
         if dist_scan[j] < min_val:
             min_val = dist_scan[j]
