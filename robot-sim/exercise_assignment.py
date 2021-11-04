@@ -245,7 +245,7 @@ def main():
         if rf is 0: # There's no obstacles in front of the robot.
             dist, rot_y = find_silver_token() # Find the closest silver token.
 
-            if abs(rot_y) <= sector_angle and dist <= d_br: # If the silver token is in font of the robot.
+            if abs(rot_y) <= 1.5*sector_angle and dist <= d_br: # If the silver token is in font of the robot.
                 print("\n \nI see a silver token!\n \nApproaching...\n")
                 searchSilver()
 
