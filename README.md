@@ -85,7 +85,7 @@ The function `findRoad` aims at finding an obstacle-free road to orient the robo
 Specifically, for each pair of sectors (e.g., +1 and -1), the function selects the one with the further obstacle and checks whether the obstacle's distance is acceptable. If so, the sector is considered obstacle-free. Otherwise, the search continues.
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad_image.jpg" width=80%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad_image.jpg" width=60%>
 </p>
 
 ### scanSectors ###
@@ -101,7 +101,7 @@ The function `searchSilver` aims to search for the closest silver token to make 
 The `moveSilver` function can move the grabbed silver token behind the robot, looking around for obstacles to decide if it's better to turn left or right. Thanks to this, it avoids the robot hurting obstacles during the turning operation.
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver_image.jpg" width=80%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver_image.jpg" width=60%>
 </p>
 
 Robot API
