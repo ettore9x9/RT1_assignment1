@@ -187,6 +187,8 @@ def searchSilver():
 
     while (1):
         dist, rot_y = find_silver_token()
+
+        #Writes distance from silver token on screen refreshing the value.
         sys.stdout.write("\rSilver token in: {0}".format(round(dist, 3)))
         sys.stdout.flush()
 
@@ -196,14 +198,17 @@ def searchSilver():
         elif rot_y > a_th:
             turn(2, 0.4)
 
-        else: # The robot is well aligned.
-            if R.grab() is True: # Tries to grab the silver token.
-                print("\n \nGrabbed! Let's move it...\n")
-                moveSilver()
-                return 0
+        elif dist > d_th: #The robot is well aligned, so it can approach the silver token.
+            drive(20, 0.5)
 
-            else:
-                drive(20, 0.5) # Moves forward to the silver token.
+        elif R.grab() == True: # Grabs the silver token.
+            print("\n \nGrabbed! Let's move it...\n")
+            moveSilver()
+            return 0
+
+        else: # The grabber did not work well, try again to approach the silver token.
+            drive(-10, 0.5)
+            turn(2,0.3)
 
 def moveSilver():
     """
