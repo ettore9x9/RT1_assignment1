@@ -40,7 +40,7 @@ Meaning that sector 0 is always in front of the robot, while right-side sectors 
 The main code has the following flowchart:
  
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/flowchart_main.jpg.jpg" width=50% height=50%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/flowchart_main.jpg" width=50% height=50%>
 </p>
 
 ### searchRoad ###
@@ -84,7 +84,7 @@ The `moveSilver` function can move the grabbed silver token behind the robot, lo
 <img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/movesilver_image.jpg" width=60%>
 </p>
 
-In conclusion, this is the behaviour of the robot:
+In conclusion, this is the robot's behaviour:
 <figure class="video_container">
     <video controls="true" allowfullscreen="true" poster="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/findroad_image.jpg">
         <source src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/robot_behaviour.mp4" type="video/mp4">
