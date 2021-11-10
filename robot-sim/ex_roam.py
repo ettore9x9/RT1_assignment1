@@ -245,7 +245,7 @@ def main():
 
     while(1):
         rf = searchRoad() # Road found
-        if rf is 0: # There's no obstacles in front of the robot.
+        if rf is 0: # There are no obstacles in front of the robot.
             dist, rot_y = find_silver_token() # Find the closest silver token.
 
             if abs(rot_y) <= 1.5*sector_angle and dist <= d_br: # If the silver token is in front of the robot.
