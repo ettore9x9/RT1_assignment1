@@ -11,33 +11,13 @@ The simulator requires a Python 2.7 installation, the [pygame](http://pygame.org
 
 Once the dependencies are installed, simply run the `test.py` script to test out the simulator.
 
-## Exercises
------------------------------
-
-To run one or more scripts in the simulator, use `run.py`, passing it the file names. 
-
-I am proposing you three exercises, with an increasing level of difficulty.
-The instruction for the three exercises can be found inside the .py files (exercise1.py, exercise2.py, exercise3.py).
-
-When done, you can run the program with:
-
-```bash
-$ python run.py exercise1.py
-```
-
-You have also the solutions of the exercises (folder solutions)
-
-```bash
-$ python run.py solutions/exercise1_solution.py
-```
-
 Assignment
 ----------
 
 You can run the program with:
 
 ```bash
-$ python run.py exercise_assignment.py
+$ python run.py ex_roam.py
 ```
 
 The objective of the assignment is to make the robot wander in the circuit, avoiding obstacles (golden tokens) and moving behind itself the silver tokens found along its way.
@@ -52,7 +32,7 @@ To achieve this goal, five functions were developed:
 The robot can divide the surrounding space into sectors, and find the nearest obstacle in each one. The number of sectors is specified in the variable nsect (default value = 12); changing this parameter can compromise the operation. Sectors are numbered as shown:
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/sectors.jpg" width=30% height=30%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/sectors.jpg" width=30% height=30%>
 </p>
 
 Meaning that sector 0 is always in front of the robot, while right-side sectors have negative numbers and left-side sectors positive ones.
@@ -60,7 +40,7 @@ Meaning that sector 0 is always in front of the robot, while right-side sectors 
 The main code has the following flowchart:
  
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_main.jpg" width=50% height=50%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/flowchart_main.jpg.jpg" width=50% height=50%>
 </p>
 
 ### searchRoad ###
@@ -76,7 +56,7 @@ Choices made:
 The `searchRoad` function has the following flowchart:
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_searchRoad.jpg" width=50% height=50%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/flowchart_searchRoad.jpg" width=50% height=50%>
 </p>
 
 ### findRoad ###
@@ -85,7 +65,7 @@ The function `findRoad` aims at finding an obstacle-free road to orient the robo
 Specifically, for each pair of sectors (e.g., +1 and -1), the function selects the one with the further obstacle and checks whether the obstacle's distance is acceptable. If so, the sector is considered obstacle-free. Otherwise, the search continues.
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad_image.jpg" width=60%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/findroad_image.jpg" width=60%>
 </p>
 
 ### scanSectors ###
@@ -101,8 +81,15 @@ The function `searchSilver` aims to search for the closest silver token to make 
 The `moveSilver` function can move the grabbed silver token behind the robot, looking around for obstacles to decide if it's better to turn left or right. Thanks to this, it avoids the robot hurting obstacles during the turning operation.
 
 <p align="center">
-<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver_image.jpg" width=60%>
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/movesilver_image.jpg" width=60%>
 </p>
+
+In conclusion, this is the behaviour of the robot:
+<figure class="video_container">
+    <video controls="true" allowfullscreen="true" poster="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/findroad_image.jpg">
+        <source src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/robot_behaviour.mp4" type="video/mp4">
+    </video>
+</figure>
 
 Robot API
 ---------
@@ -167,3 +154,10 @@ for m in markers:
 ```
 
 [sr-api]: https://studentrobotics.org/docs/programming/sr/
+
+Possible improvements
+------------
+
+* Make the robot move more fluently.
+* Make the robot turn exactly in the correct sector.
+* Optimize the trajectory of the robot.
