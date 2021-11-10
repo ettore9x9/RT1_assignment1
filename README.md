@@ -86,7 +86,7 @@ The `moveSilver` function can move the grabbed silver token behind the robot, lo
 
 In conclusion, this is the robot's behaviour:
 <figure class="video_container">
-    <video controls="true" allowfullscreen="true" poster="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/findroad_image.jpg">
+    <video controls="true" allowfullscreen="true">
         <source src="https://github.com/ettore9x9/RT1_assignment1/blob/master/robot-sim/sr/robot_behaviour.mp4" type="video/mp4">
     </video>
 </figure>
