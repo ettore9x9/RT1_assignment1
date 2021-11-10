@@ -2,43 +2,89 @@ Python Robotics Simulator
 ================================
 
 This is a simple, portable robot simulator developed by [Student Robotics](https://studentrobotics.org).
-Some of the arenas and the exercises have been modified for the Research Track I course
+Some of the arenas and the exercises have been modified for the Research Track I course.
 
 Installing and running
 ----------------------
 
 The simulator requires a Python 2.7 installation, the [pygame](http://pygame.org/) library, [PyPyBox2D](https://pypi.python.org/pypi/pypybox2d/2.1-r331), and [PyYAML](https://pypi.python.org/pypi/PyYAML/).
 
-Pygame, unfortunately, can be tricky (though [not impossible](http://askubuntu.com/q/312767)) to install in virtual environments. If you are using `pip`, you might try `pip install hg+https://bitbucket.org/pygame/pygame`, or you could use your operating system's package manager. Windows users could use [Portable Python](http://portablepython.com/). PyPyBox2D and PyYAML are more forgiving, and should install just fine using `pip` or `easy_install`.
+Once the dependencies are installed, simply run the `test.py` script to test out the simulator.
 
-## Troubleshooting
+Assignment
+----------
 
-When running `python run.py <file>`, you may be presented with an error: `ImportError: No module named 'robot'`. This may be due to a conflict between sr.tools and sr.robot. To resolve, symlink simulator/sr/robot to the location of sr.tools.
-
-On Ubuntu, this can be accomplished by:
-* Find the location of srtools: `pip show sr.tools`
-* Get the location. In my case this was `/usr/local/lib/python2.7/dist-packages`
-* Create symlink: `ln -s path/to/simulator/sr/robot /usr/local/lib/python2.7/dist-packages/sr/`
-
-## Exercise
------------------------------
-
-To run one or more scripts in the simulator, use `run.py`, passing it the file names. 
-
-I am proposing you three exercises, with an increasing level of difficulty.
-The instruction for the three exercises can be found inside the .py files (exercise1.py, exercise2.py, exercise3.py).
-
-When done, you can run the program with:
+You can run the program with:
 
 ```bash
-$ python run.py exercise1.py
+$ python run.py ex_roam.py
 ```
 
-You have also the solutions of the exercises (folder solutions)
+The objective of the assignment is to make the robot wander in the circuit, avoiding obstacles (golden tokens) and moving behind itself the silver tokens found along its way.
 
-```bash
-$ python run.py solutions/exercise1_solution.py
-```
+To achieve this goal, five functions were developed:
+* `searchRoad()`
+* `findRoad(dist_scan)`
+* `scanSectors(token_list)`
+* `searchSilver()`
+* `moveSilver()`
+
+The robot can divide the surrounding space into sectors, and find the nearest obstacle in each one. The number of sectors is specified in the variable nsect (default value = 12); changing this parameter can compromise the operation. Sectors are numbered as shown:
+
+<p align="center">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/sectors.jpg" width=30% height=30%>
+</p>
+
+Meaning that sector 0 is always in front of the robot, while right-side sectors have negative numbers and left-side sectors positive ones.
+
+The main code has the following flowchart:
+ 
+<p align="center">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_main.jpg" width=50% height=50%>
+</p>
+
+### searchRoad ###
+
+Let us focus on the function `searchRoad`. This function aims to search for a good orientation for the robot, choosing whether to turn it or not, depending on the distance from the obstacles in each sector.
+
+Choices made:
+* If an obstacle is found to be near in both sectors +1 and -1, i.e., the road is too narrow, it calls the function `findRoad`.
+* Otherwise, provided that there are no obstacles in sector 0, it moves the robot further.
+* Furthermore, to avoid the robot's side getting too close to an obstacle, `searchRoad` checks if sectors +1 or -1 are obstacle-free. If one of them is not, then it turns a little bit.
+* If there is an obstacle in sector 0, the robot must turn to find a better way, so the `findRoad` function is called.
+
+The `searchRoad` function has the following flowchart:
+
+<p align="center">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/flowchart_searchRoad.jpg" width=50% height=50%>
+</p>
+
+### findRoad ###
+
+The function `findRoad` aims at finding an obstacle-free road to orient the robot that way. To do so, it looks both right-side (negative numbers) and left-side (positive numbers), symmetrically and sequentially, and stops when it finds the nearest obstacle-free sector.
+Specifically, for each pair of sectors (e.g., +1 and -1), the function selects the one with the further obstacle and checks whether the obstacle's distance is acceptable. If so, the sector is considered obstacle-free. Otherwise, the search continues.
+
+<p align="center">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/findroad_image.jpg" width=60%>
+</p>
+
+### scanSectors ###
+
+The `scanSector` function is used to search for the closest gold token in each sector. Its argument is the list of tokens provided by the `R.see` method, and it returns a float array in which the j-th element is the smallest distance from a golden token detected in the j-th sector.
+
+### searchSilver ###
+
+The function `searchSilver` aims to search for the closest silver token to make the robot collect it. First, it turns the robot, then it drives the robot near the silver token to finally grab it. Lastly, it calls the `moveSilver` function.
+
+### moveSilver ###
+
+The `moveSilver` function can move the grabbed silver token behind the robot, looking around for obstacles to decide if it's better to turn left or right. Thanks to this, it avoids the robot hurting obstacles during the turning operation.
+
+<p align="center">
+<img src="https://github.com/ettore9x9/RT1_assignment1/blob/master/images/movesilver_image.jpg" width=60%>
+</p>
+
+In conclusion, this is the behaviour of the robot:
 
 Robot API
 ---------
@@ -103,3 +149,10 @@ for m in markers:
 ```
 
 [sr-api]: https://studentrobotics.org/docs/programming/sr/
+
+Possible improvements
+------------
+
+* Make the robot move more fluently.
+* Make the robot turn exactly in the correct sector.
+* Optimize the trajectory of the robot.
